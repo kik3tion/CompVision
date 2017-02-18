@@ -4,6 +4,7 @@
 #include <sstream>
 #include <iostream>
 #include <fstream>
+#include <vector>
 
 using namespace std;
 using namespace cv;
@@ -34,6 +35,56 @@ void getChessboardCorners(vector<Mat> images, vector<vector<Point2f>>& allFoundC
 			waitKey(0);
 		}
 	}
+}
+
+void cameraCalibration(vector<Mat> calibrationImages, Size boardSize, float squareEdgeLength, Mat& cameraMatrix, Mat& distanceCoefficients)
+{
+	vector<vector<Point2f>> checkerboardImagesSpacePoints;
+	getChessboardCorners(calibrationImages,checkerboardImagesSpacePoints,false);
+	vector<vector<Point3f>> worldSpaceCornerPoints(1);
+	createKnownBoardPosition(boardSize, squareEdgeLength, worldSpaceCornerPoints[0]);
+
+	vector<Mat> rVectors, tVectors;
+	distanceCoefficients= Mat::zeros(8, 1, CV_64F);
+
+	calibrateCamera(worldSpaceCornerPoints, checkerboardImagesSpacePoints, boardSize, cameraMatrix, distanceCoefficients, rVectors, tVectors);
+
+
+}
+
+bool saveCameraCalibration(string name, Mat cameraMatrix, Mat distanceCoefficients) 
+{
+	ofstream outStream(name);
+	if(outStream)
+	{
+		uint16_t rows = cameraMatrix.rows;
+		uint16_t columns = cameraMatrix.cols;
+
+		for (int r = 0; r < rows; r++)
+		{ 
+			for (int c = 0; c < columns; c++) 
+			{ 
+				double value = cameraMatrix.at<double>(r, c); 
+				outStream << value << endl; 
+			}
+		}
+
+		rows = distanceCoefficients.rows;
+		columns = distanceCoefficients.cols;
+		
+		for (int r = 0; r < rows; r++)
+		{
+			for (int c = 0; c < columns; c++)
+			{
+				double value = distanceCoefficients.at<double>(r, c);
+				outStream << value << endl;
+			}
+		}
+
+		outStream.close();
+		return true;
+	}
+	return false;
 }
 
 int main(int argv, char** argc) {
@@ -70,11 +121,43 @@ int main(int argv, char** argc) {
 		found = findChessboardCorners(frame, chessboardDimensions, foundPoints, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_NORMALIZE_IMAGE);
 		frame.copyTo(drawToFrame);
 		drawChessboardCorners(drawToFrame, chessboardDimensions, foundPoints, found);
-		if (found)
+		if (found){
+			/*line(drawToFrame, foundPoints.front, (Point)foundPoints.at(6), Scalar(255, 0, 0), 1, 8, 0);
+			line(drawToFrame, foundPoints.front, (Point)foundPoints.at(1), Scalar(0,255, 0), 1, 8, 0);
+			line(drawToFrame, foundPoints.front, (Point)foundPoints.at(6), Scalar(0, 0, 255), 1, 8, 0);
+			
+			cvDotProduct(foundPoints.front,foundPoints.at(6));*/
 			imshow("Webcam", drawToFrame);
+		}
 		else
 			imshow("Webcam", frame);
-			char character = waitKey(1000 / framesPerSecond);
+		char character = waitKey(1000 / framesPerSecond);
+
+		switch(character)
+		{
+		case ' ':
+			//saving image
+			if(found)
+			{
+				Mat temp;
+				frame.copyTo(temp);
+				savedImage.push_back(temp);
+				
+			}
+			break;
+		case 13:
+			//start calibration
+			if(savedImage.size()>5)
+			{
+				cameraCalibration(savedImage, chessboardDimensions, calibrationSquareDImension, cameraMatrix, distanceCoefficients);
+				saveCameraCalibration("CameraCalibration for Aaron", cameraMatrix,distanceCoefficients);
+			}
+			break;
+		case 27:
+			//exit
+			return 0;
+			break;
+		}
 	}
 
 	return 0;
