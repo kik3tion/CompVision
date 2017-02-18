@@ -115,18 +115,33 @@ int main(int argv, char** argc) {
 	while (true) {
 		if (!vid.read(frame))
 			break;
-		vector<Vec2f> foundPoints;
+		vector<Vec2f> foundPoints;//change to Point3d
 		bool found = false;
 
 		found = findChessboardCorners(frame, chessboardDimensions, foundPoints, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_NORMALIZE_IMAGE);
 		frame.copyTo(drawToFrame);
 		drawChessboardCorners(drawToFrame, chessboardDimensions, foundPoints, found);
+		
 		if (found){
-			/*line(drawToFrame, foundPoints.front, (Point)foundPoints.at(6), Scalar(255, 0, 0), 1, 8, 0);
-			line(drawToFrame, foundPoints.front, (Point)foundPoints.at(1), Scalar(0,255, 0), 1, 8, 0);
-			line(drawToFrame, foundPoints.front, (Point)foundPoints.at(6), Scalar(0, 0, 255), 1, 8, 0);
-			
-			cvDotProduct(foundPoints.front,foundPoints.at(6));*/
+						//DRAWING
+			//draw the reference frame on the image
+			/*
+			circle(drawToFrame, (Point)imagePoints[0], 4, CV_RGB(255, 0, 0));
+
+			Point one, two, three;
+			one.x = 10; one.y = 10;
+			two.x = 60; two.y = 10;
+			three.x = 10; three.y = 60;
+
+			line(drawToFrame, one, two, CV_RGB(255, 0, 0));
+			line(drawToFrame, one, three, CV_RGB(0, 255, 0));
+
+
+			line(drawToFrame, foundPoints[0], foundPoints[1], CV_RGB(255, 0, 0), 2);
+			line(drawToFrame, foundPoints[0], foundPoints[2], CV_RGB(0, 255, 0), 2);
+			line(drawToFrame, foundPoints[0], foundPoints[3], CV_RGB(0, 0, 255), 2);
+			*/
+
 			imshow("Webcam", drawToFrame);
 		}
 		else
