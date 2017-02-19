@@ -13,10 +13,65 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="images">
+      <UniqueIdentifier>{40a4fb3a-a96b-4ec0-b27f-92689f19edff}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="images\WIN_20170218_18_44_51_Pro.jpg">
+      <Filter>images</Filter>
+    </Image>
+    <Image Include="images\WIN_20170218_18_45_02_Pro.jpg">
+      <Filter>images</Filter>
+    </Image>
+    <Image Include="images\WIN_20170218_18_45_07_Pro.jpg">
+      <Filter>images</Filter>
+    </Image>
+    <Image Include="images\WIN_20170218_18_45_20_Pro.jpg">
+      <Filter>images</Filter>
+    </Image>
+    <Image Include="images\WIN_20170218_18_45_30_Pro.jpg">
+      <Filter>images</Filter>
+    </Image>
+    <Image Include="images\WIN_20170218_18_45_39_Pro.jpg">
+      <Filter>images</Filter>
+    </Image>
+    <Image Include="images\WIN_20170218_18_45_43_Pro.jpg">
+      <Filter>images</Filter>
+    </Image>
+    <Image Include="images\WIN_20170218_18_45_47_Pro.jpg">
+      <Filter>images</Filter>
+    </Image>
+    <Image Include="images\WIN_20170218_18_45_55_Pro.jpg">
+      <Filter>images</Filter>
+    </Image>
+    <Image Include="images\WIN_20170218_18_45_57_Pro.jpg">
+      <Filter>images</Filter>
+    </Image>
+    <Image Include="images\WIN_20170218_18_46_01_Pro.jpg">
+      <Filter>images</Filter>
+    </Image>
+    <Image Include="images\WIN_20170218_18_46_07_Pro.jpg">
+      <Filter>images</Filter>
+    </Image>
+    <Image Include="images\WIN_20170218_18_46_16_Pro.jpg">
+      <Filter>images</Filter>
+    </Image>
+    <Image Include="images\WIN_20170218_18_46_19_Pro.jpg">
+      <Filter>images</Filter>
+    </Image>
+    <Image Include="images\WIN_20170218_18_46_25_Pro.jpg">
+      <Filter>images</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="main.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

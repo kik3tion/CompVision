@@ -103,7 +103,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(OPENCV3_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -141,7 +141,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(OPENCV3_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -155,6 +155,26 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="images\WIN_20170218_18_44_51_Pro.jpg" />
+    <Image Include="images\WIN_20170218_18_45_02_Pro.jpg" />
+    <Image Include="images\WIN_20170218_18_45_07_Pro.jpg" />
+    <Image Include="images\WIN_20170218_18_45_20_Pro.jpg" />
+    <Image Include="images\WIN_20170218_18_45_30_Pro.jpg" />
+    <Image Include="images\WIN_20170218_18_45_39_Pro.jpg" />
+    <Image Include="images\WIN_20170218_18_45_43_Pro.jpg" />
+    <Image Include="images\WIN_20170218_18_45_47_Pro.jpg" />
+    <Image Include="images\WIN_20170218_18_45_55_Pro.jpg" />
+    <Image Include="images\WIN_20170218_18_45_57_Pro.jpg" />
+    <Image Include="images\WIN_20170218_18_46_01_Pro.jpg" />
+    <Image Include="images\WIN_20170218_18_46_07_Pro.jpg" />
+    <Image Include="images\WIN_20170218_18_46_16_Pro.jpg" />
+    <Image Include="images\WIN_20170218_18_46_19_Pro.jpg" />
+    <Image Include="images\WIN_20170218_18_46_25_Pro.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="main.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
