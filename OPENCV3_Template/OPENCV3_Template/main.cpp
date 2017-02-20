@@ -215,17 +215,15 @@ bool runCalibrationAndSave(Settings& s, Size imageSize, Mat&  cameraMatrix, Mat&
 	vector<vector<Point2f> > imagePoints);
 
 
-void drawAxis(InputOutputArray img, Point init_corner, vector<Point2f> imgPoints ) {
+void drawAxis(InputOutputArray img, Point init_corner, vector<vector<Point2f> > imagePoints) {
 	//Axis X
-	line(img, init_corner, imgPoints[0], CV_RGB(0, 0, 255), 4);
+	line(img, init_corner, imagePoints[0][3], CV_RGB(0, 0, 255), 4);
 	//Axis Y
-	line(img, init_corner, imgPoints[2], CV_RGB(255, 0, 0), 4);
+	line(img, init_corner, imagePoints[0][27], CV_RGB(255, 0, 0), 4);
 	//Axis Z
 
+
 }
-//Global variables
-//Global parameters
-vector<Mat> rvecs, tvecs;
 
 int main(int argc, char* argv[])
 {
@@ -254,7 +252,7 @@ int main(int argc, char* argv[])
 	clock_t prevTimestamp = 0;
 	const Scalar RED(0, 0, 255), GREEN(0, 255, 0);
 	const char ESC_KEY = 27;
-	Settings temp = s;
+
 	for (int i = 0;; ++i)
 	{
 		Mat view;
@@ -274,124 +272,6 @@ int main(int argc, char* argv[])
 		{
 			if (imagePoints.size() > 0)
 				runCalibrationAndSave(s, imageSize, cameraMatrix, distCoeffs, imagePoints);
-
-				
-			break;
-		}
-
-
-		imageSize = view.size();  // Format input image.
-		if (s.flipVertical)    flip(view, view, 0);
-
-		vector<Point2f> pointBuf;
-
-		bool found;
-		switch (s.calibrationPattern) // Find feature points on the input format
-		{
-		case Settings::CHESSBOARD:
-			found = findChessboardCorners(view, s.boardSize, pointBuf,
-				CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FAST_CHECK | CV_CALIB_CB_NORMALIZE_IMAGE);
-			break;
-		case Settings::CIRCLES_GRID:
-			found = findCirclesGrid(view, s.boardSize, pointBuf);
-			break;
-		case Settings::ASYMMETRIC_CIRCLES_GRID:
-			found = findCirclesGrid(view, s.boardSize, pointBuf, CALIB_CB_ASYMMETRIC_GRID);
-			break;
-		default:
-			found = false;
-			break;
-		}
-
-		if (found)                // If done with success,
-		{
-			// improve the found corners' coordinate accuracy for chessboard
-			if (s.calibrationPattern == Settings::CHESSBOARD)
-			{
-				Mat viewGray;
-				cvtColor(view, viewGray, COLOR_BGR2GRAY);
-				cornerSubPix(viewGray, pointBuf, Size(11, 11),
-					Size(-1, -1), TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 30, 0.1));
-			}
-
-			if (mode == CAPTURING &&  // For camera only take new samples after delay time
-				(!s.inputCapture.isOpened() || clock() - prevTimestamp > s.delay*1e-3*CLOCKS_PER_SEC))
-			{
-				imagePoints.push_back(pointBuf);
-				prevTimestamp = clock();
-				blinkOutput = s.inputCapture.isOpened();
-			}
-
-			
-		}
-		
-		//----------------------------- Output Text ------------------------------------------------
-		string msg = (mode == CAPTURING) ? "100/100" :
-			mode == CALIBRATED ? "Calibrated" : "Press 'g' to start";
-		int baseLine = 0;
-		Size textSize = getTextSize(msg, 1, 1, 1, &baseLine);
-		Point textOrigin(view.cols - 2 * textSize.width - 10, view.rows - 2 * baseLine - 10);
-
-		if (mode == CAPTURING)
-		{
-			if (s.showUndistorsed)
-				msg = format("%d/%d Undist", (int)imagePoints.size(), s.nrFrames);
-			else
-				msg = format("%d/%d", (int)imagePoints.size(), s.nrFrames);
-		}
-
-		putText(view, msg, textOrigin, 1, 1, mode == CALIBRATED ? GREEN : RED);
-
-		if (blinkOutput)
-			bitwise_not(view, view);
-
-		//------------------------- Video capture  output  undistorted ------------------------------
-		/*if (mode == CALIBRATED && s.showUndistorsed)
-		{
-			Mat temp = view.clone();
-			undistort(temp, view, cameraMatrix, distCoeffs);
-		}
-*/
-		//------------------------------ Show image and check for input commands -------------------
-	/*	imshow("Image View", view);
-		char key = (char)waitKey(s.inputCapture.isOpened() ? 50 : s.delay);
-
-		if (key == ESC_KEY)
-			break;
-
-		if (key == 'u' && mode == CALIBRATED)
-			s.showUndistorsed = !s.showUndistorsed;
-
-		if (s.inputCapture.isOpened() && key == 'g')
-		{
-			mode = CAPTURING;
-			imagePoints.clear();
-		}*/
-	}
-	
-	s = temp;
-
-	for (int i = 0;; ++i)
-	{
-		Mat view;
-		bool blinkOutput = false;
-
-		view = s.nextImage();
-
-		//-----  If no more image, or got enough, then stop calibration and show result -------------
-		if (mode == CAPTURING && imagePoints.size() >= (unsigned)s.nrFrames)
-		{
-			if (runCalibrationAndSave(s, imageSize, cameraMatrix, distCoeffs, imagePoints))
-				mode = CALIBRATED;
-			else
-				mode = DETECTION;
-		}
-		if (view.empty())          // If no more images then run calibration, save and stop loop.
-		{
-			/*if (imagePoints.size() > 0)
-				runCalibrationAndSave(s, imageSize, cameraMatrix, distCoeffs, imagePoints);
-*/
-
 			break;
 		}
 
@@ -439,26 +319,14 @@ int main(int argc, char* argv[])
 			}
 
 			// Draw the corners.
-			drawChessboardCorners(view, s.boardSize, Mat(pointBuf), found);
-
-			//Draw Axis
-			vector<Point3f> axis;
-			axis.push_back(Point3f(3, 0, 0));
-			axis.push_back(Point3f(0, 3, 0));
-			axis.push_back(Point3f(0, 0, -3));
-
-			//Mat pointMat = Mat(axis).reshape(-1, 3);
+			//drawChessboardCorners(view, s.boardSize, Mat(pointBuf), found);
 			
-			//solvePnP( axis, pointBuf, cameraMatrix, distCoeffs, rvecs, tvecs, false);//(objp, corners2, mtx, dist)
-
-			projectPoints(axis, rvecs[i], tvecs[i], cameraMatrix, distCoeffs,pointBuf);
-
-
-			drawAxis(view,pointBuf[0],pointBuf);
+			//Dibuixar eixos
+			//drawAxis(view,pointBuf[0],pointBuf);
 			//line(view, pointBuf[0], pointBuf[3], CV_RGB(0, 0, 255), 5);
 
 		}
-
+		
 		//----------------------------- Output Text ------------------------------------------------
 		string msg = (mode == CAPTURING) ? "100/100" :
 			mode == CALIBRATED ? "Calibrated" : "Press 'g' to start";
@@ -504,7 +372,7 @@ int main(int argc, char* argv[])
 	}
 
 	// -----------------------Show the undistorted image for the image list ------------------------
-	/*if (s.inputType == Settings::IMAGE_LIST && s.showUndistorsed)
+	if (s.inputType == Settings::IMAGE_LIST && s.showUndistorsed)
 	{
 		Mat view, rview, map1, map2;
 		initUndistortRectifyMap(cameraMatrix, distCoeffs, Mat(),
@@ -523,7 +391,7 @@ int main(int argc, char* argv[])
 				break;
 		}
 	}
-*/
+
 
 	return 0;
 }
@@ -597,14 +465,46 @@ static bool runCalibration(Settings& s, Size& imageSize, Mat& cameraMatrix, Mat&
 	//Find intrinsic and extrinsic camera parameters
 	double rms = calibrateCamera(objectPoints, imagePoints, imageSize, cameraMatrix,
 		distCoeffs, rvecs, tvecs, s.flag | CV_CALIB_FIX_K4 | CV_CALIB_FIX_K5);
-	
- 	cout << "Re-projection error reported by calibrateCamera: " << rms << endl;
+
+	cout << "Re-projection error reported by calibrateCamera: " << rms << endl;
 
 	bool ok = checkRange(cameraMatrix) && checkRange(distCoeffs);
 
 	totalAvgErr = computeReprojectionErrors(objectPoints, imagePoints,
 		rvecs, tvecs, cameraMatrix, distCoeffs, reprojErrs);
+	
+	
+	
+	//vector<vector<Point2f> > imagePoints
 
+	//Dibuixar eixos
+	vector<Point2f> corners;
+
+
+	vector<Point3f> axis;
+	axis.push_back(Point3f(3, 0, 0));
+	axis.push_back(Point3f(0, 3, 0));
+	axis.push_back(Point3f(0, 0, 3));
+
+	//axis = Mat(axis).reshape(-1, 3);
+
+	Mat img_test = imread("images/WIN_20170218_18_44_51_Pro.jpg");
+
+	corners = imagePoints[0];
+
+	solvePnPRansac(objectPoints[0], imagePoints[0], cameraMatrix, distCoeffs, rvecs[0], tvecs[0], false);
+
+	projectPoints(axis, rvecs[0],tvecs[0], cameraMatrix, distCoeffs, imagePoints[0]);
+
+	//drawAxis(img_test, imagePoints[0][0], imagePoints);
+	//Axis X
+	line(img_test, corners[0], imagePoints[0][0], CV_RGB(255, 0, 0), 3);
+	//Axis Y
+	line(img_test, corners[0], imagePoints[0][1], CV_RGB(0, 255, 0), 3);
+	//Axis Z
+	line(img_test, corners[0], imagePoints[0][2], CV_RGB(0, 0, 255), 3);
+	imshow("TEST",img_test);
+	waitKey(0);
 	return ok;
 }
 
@@ -689,6 +589,7 @@ static void saveCameraParams(Settings& s, Size& imageSize, Mat& cameraMatrix, Ma
 
 bool runCalibrationAndSave(Settings& s, Size imageSize, Mat&  cameraMatrix, Mat& distCoeffs, vector<vector<Point2f> > imagePoints)
 {
+	vector<Mat> rvecs, tvecs;
 	vector<float> reprojErrs;
 	double totalAvgErr = 0;
 
