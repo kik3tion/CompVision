@@ -480,7 +480,7 @@ static bool runCalibration(Settings& s, Size& imageSize, Mat& cameraMatrix, Mat&
 	//Dibuixar eixos
 	vector<Point2f> corners;
 
-
+	//AXIS
 	vector<Point3f> axis;
 	axis.push_back(Point3f(3, 0, 0));
 	axis.push_back(Point3f(0, 3, 0));
@@ -498,11 +498,48 @@ static bool runCalibration(Settings& s, Size& imageSize, Mat& cameraMatrix, Mat&
 
 	//drawAxis(img_test, imagePoints[0][0], imagePoints);
 	//Axis X
+	/*line(img_test, corners[0], corners[3], CV_RGB(255, 0, 0), 3, 8, 0);
+	//Axis Y
+	line(img_test, corners[0], corners[27], CV_RGB(0, 255, 0), 3, 8, 0);
+	//Axis Z
+	line(img_test, corners[0], imagePoints[i][2], CV_RGB(0, 0, 255), 3, 8, 0);
+	*/
+	//CUBE
+	axis.clear();
+	axis.push_back(Point3f(0, 0, 0));
+	axis.push_back(Point3f(0, 3, 0));
+	axis.push_back(Point3f(3, 3, 0));
+	axis.push_back(Point3f(3, 0, 0));
+	axis.push_back(Point3f(0, 0, -3));
+	axis.push_back(Point3f(0, 3, -3));
+	axis.push_back(Point3f(3, 3, -3));
+	axis.push_back(Point3f(3, 0, -3));
+
+	 i = 9;
+	//corners = imagePoints[i];
+
+	//solvePnPRansac(objectPoints[i], imagePoints[i], cameraMatrix, distCoeffs, rvecs[i], tvecs[i], false);
+	
+	vector<Point2f> temp = corners;
+
+	projectPoints(axis, rvecs[i], tvecs[i], cameraMatrix, distCoeffs, temp);
+
+	//drawAxis(img_test, imagePoints[0][0], imagePoints);
+	//Axis X
+	/*for (int k=0, j = 4; k < 4, j < 8; k++, j++) {
+		line(img_test, corners[k], imagePoints[i][j], CV_RGB(0, 0,255), 3, 8, 0);
+	}
 	line(img_test, corners[0], corners[2], CV_RGB(255, 0, 0), 3, 8, 0);
 	//Axis Y
 	line(img_test, corners[0], corners[18], CV_RGB(0, 255, 0), 3, 8, 0);
 	//Axis Z
 	line(img_test, corners[0], imagePoints[i][2], CV_RGB(0, 0, 255), 3, 8, 0);
+	*/
+	line(img_test, corners[0], temp[4], CV_RGB(0, 0, 255), 3, 8, 0);
+	line(img_test, corners[3], temp[5], CV_RGB(0, 0, 255), 3, 8, 0);
+	/*line(img_test, corners[18],temp[6], CV_RGB(0, 0, 255), 3, 8, 0);
+	line(img_test, corners[21],temp[7], CV_RGB(0, 0, 255), 3, 8, 0);
+	*/
 	imshow("TEST",img_test);
 	waitKey(0);
 	return ok;
