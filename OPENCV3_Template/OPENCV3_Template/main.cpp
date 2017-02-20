@@ -488,21 +488,21 @@ static bool runCalibration(Settings& s, Size& imageSize, Mat& cameraMatrix, Mat&
 
 	//axis = Mat(axis).reshape(-1, 3);
 
-	Mat img_test = imread("images/WIN_20170218_18_44_51_Pro.jpg");
+	Mat img_test = imread("images/WIN_20170218_18_45_57_Pro.jpg");
+	int i = 9;
+	corners = imagePoints[i];
 
-	corners = imagePoints[0];
+	solvePnPRansac(objectPoints[i], imagePoints[i], cameraMatrix, distCoeffs, rvecs[i], tvecs[i], false);
 
-	solvePnPRansac(objectPoints[0], imagePoints[0], cameraMatrix, distCoeffs, rvecs[0], tvecs[0], false);
-
-	projectPoints(axis, rvecs[0],tvecs[0], cameraMatrix, distCoeffs, imagePoints[0]);
+	projectPoints(axis, rvecs[i],tvecs[i], cameraMatrix, distCoeffs, imagePoints[i]);
 
 	//drawAxis(img_test, imagePoints[0][0], imagePoints);
 	//Axis X
-	line(img_test, corners[0], imagePoints[0][0], CV_RGB(255, 0, 0), 3);
+	line(img_test, corners[0], corners[2], CV_RGB(255, 0, 0), 3, 8, 0);
 	//Axis Y
-	line(img_test, corners[0], imagePoints[0][1], CV_RGB(0, 255, 0), 3);
+	line(img_test, corners[0], corners[18], CV_RGB(0, 255, 0), 3, 8, 0);
 	//Axis Z
-	line(img_test, corners[0], imagePoints[0][2], CV_RGB(0, 0, 255), 3);
+	line(img_test, corners[0], imagePoints[i][2], CV_RGB(0, 0, 255), 3, 8, 0);
 	imshow("TEST",img_test);
 	waitKey(0);
 	return ok;
